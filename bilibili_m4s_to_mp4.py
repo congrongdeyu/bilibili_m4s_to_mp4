@@ -4,7 +4,9 @@ import subprocess
 import json
 import os
 
+
 # superPath = os.getcwd()  # 获取当前路径
+
 
 # 函数源代码来源 https://www.bilibili.com/video/BV1gv4y1M7yn
 def fix_m4s(
@@ -53,10 +55,18 @@ for root, dirs, files in os.walk("."):
         subprocess.run(
             # 先渲染然后重命名——解决部分文件名无法创建*1
             f'ffmpeg.exe -i {mp4_file_list[0]} -i {mp4_file_list[1]} -c copy output.mp4 -y'
+            # f'ffmpeg -version'
+            f' '
             # f'ffmpeg -i {mp4_file_list[0]} -i {mp4_file_list[1]} -c copy {output_Dir} -y'
+            , shell=True
+            , capture_output=False
+            , encoding='utf-8'
         )
         # 先渲染然后重命名——解决部分文件名无法创建*2
         os.rename('output.mp4', output_Dir)
 
         os.remove(mp4_file_list[0])
         os.remove(mp4_file_list[1])
+
+# 请按任意键继续. . .
+input("请按回车继续. . .")
