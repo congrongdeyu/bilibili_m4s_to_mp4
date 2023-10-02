@@ -5,7 +5,7 @@ import os
 
 # 函数源代码来源 https://www.bilibili.com/video/BV1gv4y1M7yn
 def fix_m4s(
-    target_path: str, output_path: str, bufsize: int = 256 * 1024 * 1024
+        target_path: str, output_path: str, bufsize: int = 256 * 1024 * 1024
 ) -> None:
     assert bufsize > 0
     with open(target_path, "rb") as target_file:
@@ -33,16 +33,27 @@ for root, dirs, files in os.walk("."):
             mp4_file_list.append(output_path)
 
         # print(mp4_file_list)
-
         with open(os.path.join(root, ".videoinfo"), "rb") as f:
             videoinfo = f.read()
             videoinfo = str(videoinfo, "utf-8")
             json_videoinfo = json.loads(videoinfo)
             output = json_videoinfo["title"] + ".mp4"
+            # 处理文件名中部分违规符号
+            output_Dir = re.sub('/', '-', output)
+            print(output)
+
+            # 如果文件存在——跳过
+            if os.path.exists(output_Dir):
+                print(output_Dir)
+                continue
 
         subprocess.run(
-            f'ffmpeg.exe -i {mp4_file_list[0]} -i {mp4_file_list[1]} -c copy "{output}"'
+            # 先渲染然后重命名——解决部分文件名无法创建*1
+            f'ffmpeg.exe -i {mp4_file_list[0]} -i {mp4_file_list[1]} -c copy output.mp4 -y'
+            # f'ffmpeg -i {mp4_file_list[0]} -i {mp4_file_list[1]} -c copy {output_Dir} -y'
         )
+        # 先渲染然后重命名——解决部分文件名无法创建*2
+        os.rename('output.mp4', output_Dir)
 
         os.remove(mp4_file_list[0])
         os.remove(mp4_file_list[1])
